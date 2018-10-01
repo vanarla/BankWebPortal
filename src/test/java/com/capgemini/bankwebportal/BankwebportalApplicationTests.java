@@ -33,9 +33,9 @@ public class BankwebportalApplicationTests {
 	@Test
 	public void loginTest() {
 		Customer customer=new Customer();
-		customer.setCustomerId(123);
-		customer.setCustomerPassword("shubham");
-		String result=customerController.customerLogin(request, session, customer, bindingResult);
+		customer.setCustomerId(13);
+		customer.setCustomerPassword("pallavi");
+		//String result=customerController.customerLogin(request, session, customer, bindingResult);
 		/*assertEquals("redirect:/home",result);
 		assert*/
 		

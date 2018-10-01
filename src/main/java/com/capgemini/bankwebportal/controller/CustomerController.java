@@ -2,12 +2,12 @@ package com.capgemini.bankwebportal.controller;
 
 import java.sql.SQLException;
 
+import javax.security.auth.login.AccountNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,9 +29,8 @@ public class CustomerController {
 	public String getHomePage(Model model) {
 		model.addAttribute("customer", new Customer());
 		return "index";
-	}
+	} 
 
-	@SuppressWarnings("finally")
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public String customerLogin(HttpServletRequest request, HttpSession session,
 			@Valid @ModelAttribute Customer customer, BindingResult bindingResult) {
@@ -42,20 +41,11 @@ public class CustomerController {
 		if (null == request.getCookies()) {
 			return "enableCookie";
 		} else {
-			try {
-				customer = customerService.authenticate(customer);
-			} catch (SQLException | NumberFormatException | EmptyResultDataAccessException e) {
-				request.setAttribute("name", "true");
-				customer = null;
-			} finally {
-				if (customer != null) {
-					request.getSession(false);
-					session.setAttribute("customer", customer);
-					return "redirect:/home";
-				} else
-					return "index";
-			}
+			customer = customerService.authenticate(customer);
 
+			request.getSession(false);
+			session.setAttribute("customer", customer);
+			return "redirect:/home";
 		}
 	}
 
@@ -64,12 +54,9 @@ public class CustomerController {
 		request.getSession(false);
 		Customer cust = (Customer) session.getAttribute("customer");
 		Customer customer;
-		try {
-			customer = customerService.updateSession(cust.getCustomerId());
-		} catch (SQLException e) {
-			customer = null;
-			e.printStackTrace();
-		}
+
+		customer = customerService.updateSession(cust.getCustomerId());
+
 		request.getSession().setAttribute("customer", customer);
 		return "home";
 	}
@@ -122,22 +109,11 @@ public class CustomerController {
 		}
 	}
 
-	@SuppressWarnings("finally")
 	@RequestMapping(value = "/updateProfile", method = RequestMethod.POST)
 	public String updateProfile(@ModelAttribute Customer customer, HttpServletRequest request, HttpSession session) {
-		try {
-			customer = customerService.updateProfile(customer);
-		} catch (SQLException e) {
-			customer = null;
-			e.printStackTrace();
-		} finally {
-			if (customer != null) {
-				request.getSession().setAttribute("customer", customer);
-				return "redirect:/home";
-			} else {
-				request.setAttribute("profileupdate", "false");
-				return "edit";
-			}
-		}
+		customer = customerService.updateProfile(customer);
+		request.getSession().setAttribute("customer", customer);
+		return "redirect:/home";
+
 	}
 }
