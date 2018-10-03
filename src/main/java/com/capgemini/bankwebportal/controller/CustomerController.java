@@ -1,8 +1,5 @@
 package com.capgemini.bankwebportal.controller;
 
-import java.sql.SQLException;
-
-import javax.security.auth.login.AccountNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -15,11 +12,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.capgemini.bankwebportal.model.Customer;
 import com.capgemini.bankwebportal.service.CustomerService;
 
 @Controller
+
 public class CustomerController {
 
 	@Autowired
@@ -29,7 +28,7 @@ public class CustomerController {
 	public String getHomePage(Model model) {
 		model.addAttribute("customer", new Customer());
 		return "index";
-	} 
+	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public String customerLogin(HttpServletRequest request, HttpSession session,
@@ -42,7 +41,6 @@ public class CustomerController {
 			return "enableCookie";
 		} else {
 			customer = customerService.authenticate(customer);
-
 			request.getSession(false);
 			session.setAttribute("customer", customer);
 			return "redirect:/home";
@@ -54,9 +52,7 @@ public class CustomerController {
 		request.getSession(false);
 		Customer cust = (Customer) session.getAttribute("customer");
 		Customer customer;
-
 		customer = customerService.updateSession(cust.getCustomerId());
-
 		request.getSession().setAttribute("customer", customer);
 		return "home";
 	}
